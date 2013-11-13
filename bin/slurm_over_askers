@@ -118,7 +118,7 @@ for User, l in data.items():
 		if long_format:
 			jobs = []
 			for ReqMem, MaxRSS, Ratio, JobID in zip(l[0], l[1], l[2], l[3]):
-				if ReqMem/MaxRSS > aRatio: jobs.append(JobID)
+				if ReqMem/MaxRSS > threshold_ratio: jobs.append(JobID)
 			print "%s %s (njobs: %d, average ReqMem: %s, average MaxRSS: %s, jobs: %s)" % (User, aRatio, njobs, aReqMem, aMaxRSS, jobs)
 		else:
 			print User, aRatio
