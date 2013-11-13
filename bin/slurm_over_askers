@@ -1,40 +1,43 @@
 #!/usr/bin/env python
 """\
 NAME
-	slurm_over_askers - name users asking for more memory than needed
+    slurm_over_askers - name users asking for more memory than needed
 
 SYNOPSIS
-	sacct -a -o 'User,JobID,ReqMem,MaxRSS,State,JobName' -P -n | \
-	slurm_over_askers RATIO
+    sacct -a -o 'User,JobID,ReqMem,MaxRSS,State,JobName' -P -n | \
+    slurm_over_askers RATIO
 
-	where RATIO is the ReqMem/MaxRSS value larger than which you want to flag.
+    where RATIO is the ReqMem/MaxRSS value larger than which you want to flag.
 
 DESCRIPTION
-	This reads in a specific format for sacct output, see the SYNOPSIS.
+    This reads in a specific format for sacct output, see the SYNOPSIS.
 
-	It prints out the names of users where the average ReqMem/MaxRSS is larger 
-	than the given threshold RATIO, and the value of that average ratio for the 
-	user.
+    It prints out the names of users where the average ReqMem/MaxRSS is larger 
+    than the given threshold RATIO, and the value of that average ratio for the 
+    user.
 
-	Add -l/--long-format for more details.
+    Note that jobs where --mem-per-cpu is specified, rather than just --mem, 
+    are ignored.
+
+    Add -l/--long-format for more details.
 
 OPTIONS
-	-l, --long-format
-		Print more information
+    -l, --long-format
+        Print more information
 
-	-h, --help
-		Print this help.
+    -h, --help
+        Print this help.
 
 REQUIREMENTS
-	numpy
+    numpy
 
 BUGS/TODO
-	n/a
+    n/a
 
 AUTHOR
-	Copyright (c) 2013
-	Harvard FAS Research Computing
-	John A. Brunelle
+    Copyright (c) 2013
+    Harvard FAS Research Computing
+    John A. Brunelle
 """
 
 import sys, os, getopt, numpy as np
@@ -81,18 +84,12 @@ for line in sys.stdin.readlines():
 		if ReqMem.endswith('Mn') and MaxRSS not in ('','0'):  #i.e. --mem / memory per node; ignore --mem-per-cpu
 			ReqMem = float(ReqMem[:-2])*1024**2
 			
-			if MaxRSS.endswith('K'):
-				MaxRSS = float(MaxRSS[:-1])*1024
-			elif MaxRSS.endswith('M'):
-				MaxRSS = float(MaxRSS[:-1])*1024**2
-			elif MaxRSS.endswith('G'):
-				MaxRSS = float(MaxRSS[:-1])*1024**3
-			elif MaxRSS.endswith('T'):
-				MaxRSS = float(MaxRSS[:-1])*1024**4
-			elif MaxRSS.endswith('P'):
-				MaxRSS = float(MaxRSS[:-1])*1024**5
+			for s,e in (('K',1), ('M',2), ('G',3), ('T',4), ('P',5)):
+				if MaxRSS.endswith(s):
+					MaxRSS = float(MaxRSS[:-1])*1024**e
+					break
 			else:
-				print MaxRSS
+				raise Exception()
 
 			Ratio = ReqMem/MaxRSS
 			
@@ -106,6 +103,7 @@ for line in sys.stdin.readlines():
 			l[2].append(Ratio)
 			l[3].append(JobID)
 	except Exception:
+		raise
 		sys.stderr.write("*** ERROR *** unable to parse line [%r]\n" % line)
 
 for User, l in data.items():
