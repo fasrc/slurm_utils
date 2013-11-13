@@ -57,14 +57,13 @@ for opt, optarg in opts:
 try:
 	threshold_ratio = float(args[0])
 except IndexError, ValueError:
-	sys.stderr.write("*** ERROR *** usage: %s THRESHOLD_RATIO\n" % (os.path.basename(sys.argv[0])))
+	sys.stderr.write("*** ERROR *** usage: %s RATIO\n" % (os.path.basename(sys.argv[0])))
 	sys.exit(1)
 
 
 #---
 
 
-#each user a 3-item list of lists
 data = {}
 
 lastuser = None
