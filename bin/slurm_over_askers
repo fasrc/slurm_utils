@@ -7,7 +7,7 @@ SYNOPSIS
 	sacct -a -o 'User,JobID,ReqMem,MaxRSS,State,JobName' -P -n | \
 	slurm_over_askers RATIO
 
-	where FACTOR is the ReqMem/MaxRSS value larger than which you want to flag.
+	where RATIO is the ReqMem/MaxRSS value larger than which you want to flag.
 
 DESCRIPTION
 	This reads in a specific format for sacct output, see the SYNOPSIS.
