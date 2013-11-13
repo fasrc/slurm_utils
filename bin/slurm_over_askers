@@ -110,7 +110,7 @@ for line in sys.stdin.readlines():
 		sys.stderr.write("*** ERROR *** unable to parse line [%r]\n" % line)
 
 for User, l in data.items():
-	njobs   = len(l)
+	njobs   = len(l[0])
 	aReqMem = np.average(l[0])
 	aMaxRSS = np.average(l[1])
 	aRatio  = np.average(l[2])
