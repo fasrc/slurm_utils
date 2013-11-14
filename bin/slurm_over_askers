@@ -7,10 +7,10 @@ SYNOPSIS
     sacct -a -o 'User,JobID,ReqMem,MaxRSS,State,JobName' -P -n | \
     slurm_over_askers RATIO
 
-    where RATIO is the ReqMem/MaxRSS value larger than which you want to flag.
+    where RATIO is the maximum ReqMem/MaxRSS value considered acceptable.
 
 DESCRIPTION
-    This reads in a specific format for sacct output, see the SYNOPSIS.
+    This reads in a specific format of sacct output, see the SYNOPSIS.
 
     It prints out the names of users where the average ReqMem/MaxRSS is larger 
     than the given threshold RATIO, and the value of that average ratio for the 
@@ -76,12 +76,14 @@ for line in sys.stdin.readlines():
 		line = line.strip()
 		User, JobID, ReqMem, MaxRSS, State, JobName = line.split('|')
 
+		#User and MaxRSS are not on the same line, User is on the line listed before the step that has MaxRSS
 		if User!='':
 			lastUser = User
 
 		if State!='COMPLETED' or JobName!='batch' or not JobID.endswith('.batch'):
 			continue
-		if ReqMem.endswith('Mn') and MaxRSS not in ('','0'):  #i.e. --mem / memory per node; ignore --mem-per-cpu
+		
+		if ReqMem.endswith('Mn') and MaxRSS not in ('','0'):  #i.e. ignore 'Mc', --mem-per-cpu
 			ReqMem = float(ReqMem[:-2])*1024**2
 			
 			for s,e in (('K',1), ('M',2), ('G',3), ('T',4), ('P',5)):
@@ -102,9 +104,8 @@ for line in sys.stdin.readlines():
 			l[1].append(MaxRSS)
 			l[2].append(Ratio)
 			l[3].append(JobID)
-	except Exception:
-		raise
-		sys.stderr.write("*** ERROR *** unable to parse line [%r]\n" % line)
+	except Exception, e:
+		sys.stderr.write("*** ERROR *** unable to parse line [%r]: %s\n" % (line, e))
 
 for User, l in data.items():
 	njobs   = len(l[0])
