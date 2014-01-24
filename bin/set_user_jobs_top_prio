@@ -1,0 +1,52 @@
+#!/usr/bin/env bash
+set -e
+
+helpstr="\
+NAME
+	set_user_jobs_top_prio - find jobs by username and set them to max priority
+
+SYNOPSIS
+	set_user_jobs_top_prio USERNAME...
+
+DESCRIPTION
+	For all the given USERNAMEs, this finds any of their pending jobs and sets 
+	them to priority 999999999.
+
+OPTIONS
+	-h, --help
+		Print this help.
+
+REQUIREMENTS
+	n/a
+
+BUGS/TODO
+	n/a
+
+AUTHOR
+	Copyright (c) 2013
+	Harvard FAS Research Computing
+	All rights reserved.
+"
+
+getopt -q -l help -o h -- "$@" | egrep -q '^ -h|^ --help' && echo -n "$helpstr" && exit
+
+interval=60  #seconds to sleep between each pass
+
+prefix=''  #set this to empty string to run for real; set it to 'echo' to just pring the scontrol commands
+
+set -u
+
+
+#---
+
+
+while true; do
+	for user in "$@"; do
+		echo "$(date): working on user $user"
+		#%A -- job id
+		#%Q -- priority, the large integer version
+		squeue -o '%A %Q' -u "$user" -t PD | tail -n +2 | awk '$2!="999999999" {print $1}' | xargs -I% $prefix scontrol update JobId=% Priority=999999999
+	done
+	echo "$(date): sleeping for $interval seconds..."
+	sleep "$interval"
+done
