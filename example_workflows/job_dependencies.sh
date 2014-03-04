@@ -1,9 +1,19 @@
 #!/usr/bin/env bash
 
+#
 # The sbatch option `--dependency' can be used to coordinate when jobs run.  
 # This script shows a simple example of requiring two jobs to run in 
 # non-overlapping, sequential order.  See the sbatch(1) man page for more 
 # details.
+#
+# The way this is coded, stderr still goes to the screen or whatever is calling 
+# this, and the script quits if any commands fail.  The command
+#
+#    awk '{print $NF}'
+#
+# prints the last field of a string, e.g. "JOBID" from 
+# "Submitted batch job JOBID".
+#
 
 # stop if any commands fail
 set -e 
