@@ -1,0 +1,6 @@
+cpu_user_parallel
+cpu_waster_parallel
+*.o
+*.out
+*.err
+*.sbatch
