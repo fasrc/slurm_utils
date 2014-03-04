@@ -2,12 +2,12 @@
 
 # The sbatch option `--dependency' can be used to coordinate when jobs run.  
 # This script shows a simple example of requiring two jobs to run in 
-# non-overlapping, sequential order.
+# non-overlapping, sequential order.  See the sbatch(1) man page for more 
+# details.
 
 # stop if any commands fail
 set -e 
 
-# submit first job and record its job id
 jobid1=$(sbatch -J job1 -o job1.out --wrap date | awk '{print $NF}')
 echo "job1 is: $jobid1"
 
