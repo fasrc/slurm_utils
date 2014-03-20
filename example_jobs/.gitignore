@@ -1,6 +1,6 @@
 cpu_user_parallel
 cpu_waster_parallel
+mpi_hello_world
 *.o
 *.out
 *.err
-*.sbatch
