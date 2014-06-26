@@ -7,6 +7,6 @@
 #SBATCH -t 5
 #SBATCH -n 3
 #SBATCH -N 2
-#SBATCH --mem=5150
+#SBATCH --mem=50
 
 mpirun -np 3 ./cpu_waster_parallel
